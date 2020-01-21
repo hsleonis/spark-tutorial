@@ -58,9 +58,76 @@ object Sindy {
       .csv("../../TPCH/TPCH/tpch_nation.csv")
       .as[(Int, String, Int, String)]
 
+    val nations2 = spark.read
+      .option("inferSchema", "true")
+      .option("header", "true")
+      .option("delimiter", ";")
+      .csv("../../TPCH/TPCH/tpch_nation.csv")
+      .as[(String, String, String, String)]
+
     println("---------------------------------------------------------------------------------------------------------")
 
     regions.printSchema()
     nations.printSchema()
+
+    println("---------------------------------------------------------------------------------------------------------")
+
+   // val nat = nations.map{ case (nkey, nname, nrkey, ncomment) => nkey}
+     // .show()
+
+    println("---------------------------------------------------------------------------------------------------------")
+
+    //regions.join(nations, $"R_REGIONKEY" === $"N_REGIONKEY", "outer")
+      //  .show()
+
+    println("---------------------------------------------------------------------------------------------------------")
+
+
+
+    val flat = nations2.flatMap{case (key, nname, nrkey, ncomment) => Array((key, "a"), (nname, "b"), (nrkey, "c"), (ncomment, "d"))}
+
+  /*  flat.groupByKey(t => t._1)
+      .mapGroups { case (key, iterator) =>
+        val arr = List("f")
+        iterator.foreach(m => arr + m._2)
+        //iterator.foreach(m => println(m._2))
+
+        println(arr.size)
+
+        val size = iterator.size
+        (key, size)
+      }
+      .toDF("value", "size")
+      .show()
+
+   */
+
+    println("---------------------------------------------------------------------------------------------------------")
+
+    val test = flat
+      .toDF("val", "header")
+
+    /*
+    // SQL on DataFrames
+    test.createOrReplaceTempView("test") // make this dataframe visible as a table
+    val sqlResult = spark.sql("SELECT val, attr FROM test WHERE test.val = 0")
+      .show()
+
+    val filledNulls = flat
+      .toDF("val", "attr")
+      .select(
+        col("val"),
+        col("attr").as("SELECT val FROM flat WHERE flat.val = flat.val"))
+      .show(50)
+
+     */
+
+    import org.apache.spark.sql.functions._
+    import org.apache.spark.sql.expressions._
+    val headerset = test.withColumn("set", collect_set("header").over(Window.partitionBy("val")))
+
+    headerset.select("val", "set").distinct().show()
+
+    //test.withColumn("set", collect_set("header").over(Window.partitionBy("val"))).show(false)
   }
 }
