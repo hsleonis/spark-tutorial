@@ -1,13 +1,7 @@
 package de.hpi.spark_tutorial
 
-import org.apache.spark.sql.{Dataset, Encoder, SparkSession}
-import org.apache.spark.ml.Pipeline
-import org.apache.spark.ml.classification.DecisionTreeClassificationModel
-import org.apache.spark.ml.classification.DecisionTreeClassifier
-import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
-import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
+import org.apache.log4j.{Level, Logger}
+import org.apache.spark.sql.SparkSession
 
 // A Scala case class; works out of the box as Dataset type using Spark's implicit encoders
 case class Person(name:String, surname:String, age:Int)
@@ -24,7 +18,7 @@ object SimpleSpark extends App {
     // Turn off logging
     Logger.getLogger("org").setLevel(Level.OFF)
     Logger.getLogger("akka").setLevel(Level.OFF)
-
+/*
     //------------------------------------------------------------------------------------------------------------------
     // Lamda basics (for Scala)
     //------------------------------------------------------------------------------------------------------------------
@@ -52,7 +46,7 @@ object SimpleSpark extends App {
     println(smallListOfNumbers.map(squareAndAddFunction))
     println(smallListOfNumbers.map(i => i * 2 + 0.5)) // anonymous function; compiler can infers types
     println(smallListOfNumbers.map(_ * 2 + 0.5)) // syntactic sugar: '_' maps to first (second, third, ...) parameter
-
+*/
     //------------------------------------------------------------------------------------------------------------------
     // Setting up a Spark Session
     //------------------------------------------------------------------------------------------------------------------
@@ -68,8 +62,7 @@ object SimpleSpark extends App {
     spark.conf.set("spark.sql.shuffle.partitions", "8") //
 
     // Importing implicit encoders for standard library classes and tuples that are used as Dataset types
-    import spark.implicits._
-
+/*
     println("---------------------------------------------------------------------------------------------------------")
 
     //------------------------------------------------------------------------------------------------------------------
@@ -358,7 +351,7 @@ object SimpleSpark extends App {
     //------------------------------------------------------------------------------------------------------------------
     // Longest Common Substring Search
     //------------------------------------------------------------------------------------------------------------------
-
+*/
     def time[R](block: => R): R = {
       val t0 = System.currentTimeMillis()
       val result = block
@@ -366,7 +359,7 @@ object SimpleSpark extends App {
       println(s"Execution: ${t1 - t0} ms")
       result
     }
-
+/*
     def longestCommonSubstring(str1: String, str2: String): String = {
       if (str1.isEmpty || str2.isEmpty)
         return ""
@@ -430,7 +423,7 @@ object SimpleSpark extends App {
         .toDF("ID", "Substring")
         .show(200)
     }
-
+*/
     //------------------------------------------------------------------------------------------------------------------
     // Inclusion Dependency Discovery (Homework)
     //------------------------------------------------------------------------------------------------------------------
@@ -438,6 +431,6 @@ object SimpleSpark extends App {
     val inputs = List("region", "nation", "supplier", "customer", "part", "lineitem", "orders")
       .map(name => s"data/TPCH/tpch_$name.csv")
 
-    //time {Sindy.discoverINDs(inputs, spark)}
+    time {Sindy.discoverINDs(inputs, spark)}
   }
 }
